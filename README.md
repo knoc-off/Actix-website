@@ -14,9 +14,9 @@ the wasm code i struggled packaging with nix, but i will update this if i get it
 using nix:
 cd to `wasm`
 run `nix develop`
-cd to `wasm/app` (ill consolidate these directories into one)
+cd to `wasm`
 and use `wasm-pack build --target web`
-then `cp pkg/* ../../static/`
+then `cp pkg/* ../static/`
 
 It's not pretty but it works.
 
