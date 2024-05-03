@@ -49,6 +49,19 @@
           '';
         };
 
+        nixosModules.actix-webserver = { config, lib, pkgs, ... }: {
+          systemd.services.actix-webserver = {
+            description = "Actix Web Server";
+            wantedBy = [ "multi-user.target" ];
+            after = [ "network.target" ];
+            serviceConfig = {
+              ExecStart = "${packages.actix-web-example}/bin/actix-webserver";
+              Restart = "always";
+              RestartSec = 5;
+            };
+          };
+        };
+
         defaultPackage = packages.actix-web-example;
 
         apps.webserver = flake-utils.lib.mkApp {
