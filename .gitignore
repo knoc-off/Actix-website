@@ -1,1 +1,6 @@
 /target
+
+# Nix build artifacts
+/result
+
+

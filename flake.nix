@@ -5,9 +5,12 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     rust-overlay.url = "github:oxalica/rust-overlay";
+
+    # web files:
+    wasm-app.url = "github:knoc-off/wasm-flake";
   };
 
-  outputs = { self, nixpkgs, flake-utils, rust-overlay, ... }:
+  outputs = { self, nixpkgs, flake-utils, rust-overlay, wasm-app, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         overlays = [ (import rust-overlay) ];
@@ -38,9 +41,21 @@
           cargoLock.lockFile = ./Cargo.lock;
           inherit buildInputs;
           nativeBuildInputs = with pkgs; [ pkg-config ];
+
+          # Create a symlink to the generated files from the wasm-app flake
+          postInstall = ''
+            #mkdir -p $out/static
+            ln -s ${wasm-app.defaultPackage.${system}}/lib/ $out/bin/static
+          '';
         };
 
         defaultPackage = packages.actix-web-example;
+
+        apps.webserver = flake-utils.lib.mkApp {
+          drv = packages.actix-web-example;
+        };
+
+        defaultApp = apps.webserver;
 
         devShell = pkgs.mkShell {
           inherit buildInputs;
